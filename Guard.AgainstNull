@@ -1,0 +1,25 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+// Classe estática utilitária para funções de guarda de parâmetros.
+public static class Guard
+{
+    /// <summary>
+    /// Garante que o valor fornecido não seja nulo.
+    /// Se o valor for nulo, lança um ArgumentNullException.
+    /// </summary>
+    /// <typeparam name="T">O tipo do valor, que pode ser um tipo de referência anulável.</typeparam>
+    /// <param name="value">O valor a ser verificado.</param>
+    /// <param name="paramName">O nome do parâmetro que está sendo verificado.</param>
+    
+    // [NotNull] informa ao compilador:
+    // Se este método retornar (ou seja, não lançar uma exceção),
+    // o estado de nulidade do parâmetro 'value' será 'não-nulo'.
+    public static void AgainstNull<T>([NotNull] T? value, string paramName)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(paramName);
+        }
+    }
+}
