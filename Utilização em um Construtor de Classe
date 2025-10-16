@@ -1,0 +1,44 @@
+public class Usuario
+{
+    // A string não tem '?', então é um tipo de referência não-anulável.
+    public string NomeCompleto { get; }
+    public int Idade { get; }
+
+    // No construtor, 'nome' é declarado como anulável (string?) para aceitar um possível null,
+    // mas a lógica de guarda garante que a propriedade interna será inicializada com um valor não-nulo.
+    public Usuario(string? nome, int idade)
+    {
+        // 1. Usando a função de guarda
+        // O compilador sabe que se esta chamada retornar sem exceção, 'nome' não é nulo.
+        Guard.AgainstNull(nome, nameof(nome));
+
+        // 2. O compilador não gera um warning CS8601/CS8603 aqui.
+        // Ele confia que 'nome' não é nulo e pode ser atribuído a 'NomeCompleto' (que é não-anulável).
+        NomeCompleto = nome;
+        Idade = idade;
+    }
+}
+
+// Exemplo de Uso (em uma classe separada ou Main):
+public class ExemploUso
+{
+    public static void Executar()
+    {
+        // 1. Uso Correto:
+        var usuario1 = new Usuario("Maria Silva", 30);
+        Console.WriteLine($"Usuário criado: {usuario1.NomeCompleto}"); // Saída: Maria Silva
+
+        // 2. Uso que Lança a Exceção:
+        try
+        {
+            // Isso geraria um aviso se NRT estivesse habilitado sem o '?' no parâmetro.
+            // Aqui, a guarda captura o erro em tempo de execução antes que ele cause uma NRE.
+            var usuario2 = new Usuario(null, 25);
+        }
+        catch (ArgumentNullException ex)
+        {
+            Console.WriteLine($"Erro capturado: {ex.Message}");
+            // Saída: Erro capturado: Value cannot be null. (Parameter 'nome')
+        }
+    }
+}
